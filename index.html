@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>AI Translator PRO</title>
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#2563eb">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<meta name="apple-mobile-web-app-title" content="AI Translator PRO">
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:
+linear-gradient(
+135deg,
+#020617,
+#0f172a,
+#1e293b
+);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+color:white;
+}
+
+.container{
+width:100%;
+max-width:700px;
+background:rgba(255,255,255,0.07);
+border:1px solid rgba(255,255,255,0.1);
+backdrop-filter:blur(14px);
+padding:25px;
+border-radius:30px;
+box-shadow:
+0 0 40px rgba(0,0,0,0.5);
+}
+
+.top-menu{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+.top-menu button{
+flex:1;
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+font-size:32px;
+background:
+linear-gradient(
+to right,
+#60a5fa,
+#a78bfa
+);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+textarea{
+width:100%;
+height:140px;
+padding:18px;
+border:none;
+outline:none;
+resize:none;
+font-size:17px;
+color:white;
+background:
+rgba(255,255,255,0.08);
+border-radius:20px;
+margin-bottom:20px;
+}
+
+textarea::placeholder{
+color:#cbd5e1;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+font-size:17px;
+font-weight:bold;
+background:
+linear-gradient(
+to right,
+#2563eb,
+#7c3aed
+);
+color:white;
+cursor:pointer;
+margin-bottom:15px;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.result-box{
+background:
+rgba(255,255,255,0.06);
+padding:18px;
+border-radius:20px;
+margin-top:10px;
+}
+
+.result{
+font-size:20px;
+margin-top:10px;
+margin-bottom:10px;
+word-break:break-word;
+}
+
+.favorite-item{
+padding:12px;
+margin-top:10px;
+background:
+rgba(255,255,255,0.05);
+border-radius:14px;
+}
+
+.favorite-text{
+margin-top:5px;
+}
+
+.loading{
+margin-top:10px;
+margin-bottom:10px;
+color:#93c5fd;
+font-weight:bold;
+}
+
+.search-box{
+width:100%;
+padding:14px;
+border:none;
+outline:none;
+border-radius:16px;
+background:
+rgba(255,255,255,0.08);
+color:white;
+margin-bottom:15px;
+}
+
+.search-box::placeholder{
+color:#cbd5e1;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top-menu">
+
+<button onclick="showHome()">
+🏠 Ana Sayfa
+</button>
+
+<button onclick="showFavoritesPage()">
+⭐ Favoriler
+</button>
+
+</div><div id="homePage">
+
+<h1>
+🌍 AI Translator PRO
+</h1>
+
+<textarea
+id="inputText"
+placeholder="Türkçe metin yaz...">
+</textarea>
+
+<button onclick="translateText()">
+ÇEVİR
+</button>
+
+<button onclick="saveFavorite()">
+⭐ Favorilere Kaydet
+</button>
+
+<div
+class="loading"
+id="loading">
+</div>
+
+<div class="result-box">
+
+<div
+class="result"
+id="russianText">
+-
+</div>
+
+<div
+class="result"
+id="russianLatin">
+-
+</div>
+
+<div
+class="result"
+id="englishText">
+-
+</div>
+
+<div
+class="result"
+id="englishLatin">
+-
+</div>
+
+</div>
+
+<button onclick="speakRussian()">
+🔊 Rusça Oku
+</button>
+
+<button onclick="speakEnglish()">
+🔊 İngilizce Oku
+</button>
+
+</div>
+
+<div
+id="favoritesPage"
+style="display:none;">
+
+<h1>
+⭐ Favoriler
+</h1>
+
+<input
+type="text"
+id="searchFavorite"
+class="search-box"
+placeholder="Kelime ara..."
+oninput="showFavorites()">
+
+<div class="result-box">
+
+<div id="favoritesList">
+Henüz favori yok
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const transliterationMap = {
+
+'а':'a',
+'б':'b',
+'в':'v',
+'г':'g',
+'д':'d',
+'е':'e',
+'ё':'yo',
+'ж':'zh',
+'з':'z',
+'и':'i',
+'й':'y',
+'к':'k',
+'л':'l',
+'м':'m',
+'н':'n',
+'о':'o',
+'п':'p',
+'р':'r',
+'с':'s',
+'т':'t',
+'у':'u',
+'ф':'f',
+'х':'h',
+'ц':'ts',
+'ч':'ch',
+'ш':'sh',
+'щ':'sch',
+'ъ':'',
+'ы':'i',
+'ь':'',
+'э':'e',
+'ю':'yu',
+'я':'ya',
+' ':' '
+
+};
+
+let currentRussian = '';
+let currentEnglish = '';
+
+function transliterate(text){
+
+return text
+.toLowerCase()
+.split('')
+.map(char =>
+transliterationMap[char] || char
+)
+.join('');
+
+}
+
+function englishPronunciation(text){
+
+return text
+.toLowerCase()
+.replace(/th/g,'d')
+.replace(/w/g,'v');
+
+}async function translateText(){
+
+const input =
+document.getElementById('inputText')
+.value
+.trim();
+
+if(!input){
+
+alert('Metin gir');
+return;
+
+}
+
+document.getElementById('loading')
+.innerText =
+'Çevriliyor...';
+
+try{
+
+const response =
+await fetch(
+'https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=ru&dt=t&q=' +
+encodeURIComponent(input)
+);
+
+const data =
+await response.json();
+
+currentRussian =
+data[0]
+.map(item=>item[0])
+.join('');
+
+const response2 =
+await fetch(
+'https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=en&dt=t&q=' +
+encodeURIComponent(input)
+);
+
+const data2 =
+await response2.json();
+
+currentEnglish =
+data2[0]
+.map(item=>item[0])
+.join('');
+
+document.getElementById('russianText')
+.innerText =
+'🇷🇺 ' + currentRussian;
+
+document.getElementById('russianLatin')
+.innerText =
+'🔤 ' +
+transliterate(currentRussian);
+
+document.getElementById('englishText')
+.innerText =
+'🇺🇸 ' + currentEnglish;
+
+document.getElementById('englishLatin')
+.innerText =
+'🔤 ' +
+englishPronunciation(currentEnglish);
+
+}
+catch(error){
+
+alert(
+'Çeviri hatası'
+);
+
+console.log(error);
+
+}
+
+document.getElementById('loading')
+.innerText='';
+
+}
+
+function speakRussian(){
+
+if(!currentRussian)return;
+
+const utterance =
+new SpeechSynthesisUtterance(
+currentRussian
+);
+
+utterance.lang='ru-RU';
+
+speechSynthesis.speak(
+utterance
+);
+
+}
+
+function speakEnglish(){
+
+if(!currentEnglish)return;
+
+const utterance =
+new SpeechSynthesisUtterance(
+currentEnglish
+);
+
+utterance.lang='en-US';
+
+speechSynthesis.speak(
+utterance
+);
+
+}
+
+function saveFavorite(){
+
+const input =
+document.getElementById('inputText')
+.value
+.trim();
+
+if(!input){
+
+alert('Metin gir');
+return;
+
+}
+
+if(
+!currentRussian ||
+!currentEnglish
+){
+
+alert(
+'Önce çeviri yap'
+);
+
+return;
+
+}
+
+const favorites =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+) || '[]'
+);
+
+favorites.push({
+
+turkish: input,
+
+russian:
+currentRussian,
+
+russianLatin:
+transliterate(
+currentRussian
+),
+
+english:
+currentEnglish,
+
+englishLatin:
+englishPronunciation(
+currentEnglish
+),
+
+isDefault:false
+
+});
+
+localStorage.setItem(
+'favorites',
+JSON.stringify(
+favorites
+)
+);
+
+showFavorites();
+
+alert(
+'Favorilere kaydedildi'
+);
+
+}function deleteFavorite(index){
+
+const favorites =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+) || '[]'
+);
+
+if(
+favorites[index]
+&&
+favorites[index].isDefault
+){
+
+alert(
+'Varsayılan kelimeler silinemez'
+);
+
+return;
+
+}
+
+favorites.splice(
+index,
+1
+);
+
+localStorage.setItem(
+'favorites',
+JSON.stringify(
+favorites
+)
+);
+
+showFavorites();
+
+}
+
+async function loadDefaultFavorites(){
+
+try{
+
+const response =
+await fetch(
+'./Kelime.json'
+);
+
+const words =
+await response.json();
+
+const favorites =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+) || '[]'
+);
+
+if(
+favorites.length === 0
+){
+
+const defaultWords =
+words.map(word => ({
+
+...word,
+
+isDefault:true
+
+}));
+
+localStorage.setItem(
+'favorites',
+JSON.stringify(
+defaultWords
+)
+);
+
+}
+
+showFavorites();
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+}
+
+function showFavorites(){
+
+const searchText =
+document.getElementById(
+'searchFavorite'
+)
+?
+document.getElementById(
+'searchFavorite'
+)
+.value
+.toLowerCase()
+:
+'';
+
+const favorites =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+) || '[]'
+);
+
+const filtered =
+favorites.filter(item => {
+
+return (
+(item.turkish || '')
+.toLowerCase()
+.includes(searchText)
+
+||
+
+(item.russian || '')
+.toLowerCase()
+.includes(searchText)
+
+||
+
+(item.english || '')
+.toLowerCase()
+.includes(searchText)
+
+);
+
+});
+
+const list =
+document.getElementById(
+'favoritesList'
+);
+
+if(
+filtered.length === 0
+){
+
+list.innerHTML =
+'Aranan kayıt bulunamadı';
+
+return;
+
+}
+
+list.innerHTML = '';
+
+filtered.forEach(
+(item,index)=>{
+
+list.innerHTML += `
+
+<div class="favorite-item">
+
+<div class="favorite-text">
+🇹🇷 ${item.turkish}
+</div>
+
+<div class="favorite-text">
+🇷🇺 ${item.russian}
+</div>
+
+<div class="favorite-text">
+🔤 ${item.russianLatin || ''}
+</div>
+
+<div class="favorite-text">
+🇺🇸 ${item.english}
+</div>
+
+<div class="favorite-text">
+🔤 ${item.englishLatin || ''}
+</div>
+
+${
+item.isDefault
+?
+''
+:
+`
+<button onclick="deleteFavorite(${favorites.indexOf(item)})">
+🗑 Sil
+</button>
+`
+}
+
+</div>
+
+`;
+
+});
+
+}
+
+function showHome(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'block';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'none';
+
+}
+
+function showFavoritesPage(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'none';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'block';
+
+showFavorites();
+
+}
+
+loadDefaultFavorites();
+
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+</script>
+
+</body>
+</html>
