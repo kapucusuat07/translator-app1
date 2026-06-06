@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>AI Translator PRO</title>
+
+<link
+rel="manifest"
+href="manifest.json">
+
+<meta
+name="theme-color"
+content="#2563eb">
+
+<meta
+name="mobile-web-app-capable"
+content="yes">
+
+<meta
+name="apple-mobile-web-app-capable"
+content="yes">
+
+<meta
+name="apple-mobile-web-app-status-bar-style"
+content="black-translucent">
+
+<meta
+name="apple-mobile-web-app-title"
+content="AI Translator PRO">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+
+background:
+linear-gradient(
+135deg,
+#020617,
+#0f172a,
+#1e293b
+);
+
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:20px;
+
+color:white;
+
+}
+
+.container{
+
+width:100%;
+max-width:800px;
+
+background:
+rgba(255,255,255,0.08);
+
+border:
+1px solid rgba(255,255,255,0.1);
+
+backdrop-filter:
+blur(15px);
+
+border-radius:30px;
+
+padding:25px;
+
+box-shadow:
+0 0 40px rgba(0,0,0,0.5);
+
+}
+
+h1{
+
+text-align:center;
+
+margin-bottom:20px;
+
+font-size:32px;
+
+background:
+linear-gradient(
+to right,
+#60a5fa,
+#a78bfa
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+}
+
+.top-menu{
+
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+
+margin-bottom:20px;
+
+}
+
+.top-menu button{
+
+flex:1;
+min-width:120px;
+
+}
+
+button{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:18px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+background:
+linear-gradient(
+to right,
+#2563eb,
+#7c3aed
+);
+
+color:white;
+
+margin-top:10px;
+
+}
+
+button:hover{
+
+opacity:0.9;
+
+}
+
+textarea{
+
+width:100%;
+
+height:140px;
+
+padding:16px;
+
+border:none;
+
+outline:none;
+
+resize:none;
+
+border-radius:18px;
+
+background:
+rgba(255,255,255,0.08);
+
+color:white;
+
+font-size:16px;
+
+margin-bottom:15px;
+
+}
+
+textarea::placeholder{
+
+color:#cbd5e1;
+
+}
+
+select{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+outline:none;
+
+border-radius:18px;
+
+background:
+rgba(255,255,255,0.08);
+
+color:white;
+
+font-size:16px;
+
+margin-bottom:15px;
+
+}
+
+.result-box{
+
+background:
+rgba(255,255,255,0.06);
+
+padding:18px;
+
+border-radius:20px;
+
+margin-top:15px;
+
+}
+
+.result{
+
+margin-top:10px;
+margin-bottom:10px;
+
+font-size:18px;
+
+word-break:break-word;
+
+}
+
+.favorite-item{
+
+padding:15px;
+
+margin-top:10px;
+
+border-radius:15px;
+
+background:
+rgba(255,255,255,0.05);
+
+}
+
+.search-box{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+outline:none;
+
+border-radius:16px;
+
+background:
+rgba(255,255,255,0.08);
+
+color:white;
+
+margin-bottom:15px;
+
+}
+
+.loading{
+
+color:#93c5fd;
+
+font-weight:bold;
+
+margin-top:10px;
+
+}
+
+.quiz-option{
+
+margin-top:10px;
+
+}
+
+.score-box{
+
+margin-top:20px;
+
+text-align:center;
+
+font-size:22px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top-menu">
+
+<button onclick="showHome()">
+🏠 Ana Sayfa
+</button>
+
+<button onclick="showFavoritesPage()">
+⭐ Favoriler
+</button>
+
+<button onclick="showQuizPage()">
+🧠 Quiz
+</button>
+
+<button onclick="showFlashcardPage()">
+🃏 Kartlar
+</button>
+
+</div>
+
+<div id="homePage">
+
+<h1>
+🌍 AI Translator PRO
+</h1>
+
+<select id="languageMode">
+
+<option value="tr-ru">
+Türkçe → Rusça
+</option>
+
+<option value="tr-en">
+Türkçe → İngilizce
+</option>
+
+<option value="ru-tr">
+Rusça → Türkçe
+</option>
+
+<option value="en-tr">
+İngilizce → Türkçe
+</option>
+
+</select>
+
+<textarea
+id="inputText"
+placeholder="Metin gir...">
+</textarea>
+
+<button onclick="translateText()">
+ÇEVİR
+</button>
+
+<button onclick="saveFavorite()">
+⭐ Favorilere Kaydet
+</button>
+
+<div
+class="loading"
+id="loading">
+</div>
+
+<div class="result-box">
+
+<div
+class="result"
+id="resultMain">
+-
+</div>
+
+<div
+class="result"
+id="resultPronunciation">
+-
+</div>
+
+</div>
+
+<button onclick="speakResult()">
+🔊 Oku
+</button>
+
+</div>
+<div
+id="favoritesPage"
+style="display:none;">
+
+<h1>
+⭐ Favoriler
+</h1>
+
+<input
+type="text"
+id="searchFavorite"
+class="search-box"
+placeholder="Kelime ara..."
+oninput="showFavorites()">
+
+<div class="result-box">
+
+<div id="favoritesList">
+
+Henüz favori yok
+
+</div>
+
+</div>
+
+</div>
+
+<div
+id="quizPage"
+style="display:none;">
+
+<h1>
+🧠 Quiz
+</h1>
+
+<div class="result-box">
+
+<div
+id="quizInfo"
+class="result">
+
+Quiz başlatmak için
+butona bas.
+
+</div>
+
+</div>
+
+<button
+id="startQuizButton"
+onclick="startQuiz()">
+
+🎯 Quiz Başlat
+
+</button>
+
+<div
+id="quizArea"
+style="display:none;">
+
+<div
+id="questionCounter"
+class="result">
+
+Soru 1 / 10
+
+</div>
+
+<div
+id="questionText"
+class="result">
+
+Soru
+
+</div>
+
+<button
+id="option0"
+class="quiz-option"
+onclick="answerQuiz(0)">
+A
+</button>
+
+<button
+id="option1"
+class="quiz-option"
+onclick="answerQuiz(1)">
+B
+</button>
+
+<button
+id="option2"
+class="quiz-option"
+onclick="answerQuiz(2)">
+C
+</button>
+
+<button
+id="option3"
+class="quiz-option"
+onclick="answerQuiz(3)">
+D
+</button>
+
+</div>
+
+<div
+id="quizResult"
+class="score-box"
+style="display:none;">
+</div>
+
+</div>
+
+<div
+id="flashcardPage"
+style="display:none;">
+
+<h1>
+🃏 Kelime Kartları
+</h1>
+
+<div
+id="cardCounter"
+class="result"
+style="text-align:center;">
+
+0 / 0
+
+</div>
+
+<div
+id="flashcard"
+onclick="flipCard()"
+class="result-box"
+style="
+min-height:240px;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+font-size:28px;
+cursor:pointer;
+">
+
+Kartlar yükleniyor...
+
+</div>
+
+<button onclick="previousCard()">
+⬅ Önceki
+</button>
+
+<button onclick="nextCard()">
+➡ Sonraki
+</button>
+
+<button onclick="randomCard()">
+🎲 Rastgele Kart
+</button>
+<button onclick="speakCard()">
+🔊 Rusça Oku
+</button>
+</div>
+
+<script>
+
+let currentRussian = '';
+let currentEnglish = '';
+
+let quizQuestions = [];
+let currentQuestion = 0;
+let correctAnswers = 0;
+let currentCorrectAnswer = 0;
+
+let flashcards = [];
+let currentCardIndex = 0;
+let cardFlipped = false;
+
+const transliterationMap = {
+
+'а':'a',
+'б':'b',
+'в':'v',
+'г':'g',
+'д':'d',
+'е':'e',
+'ё':'yo',
+'ж':'zh',
+'з':'z',
+'и':'i',
+'й':'y',
+'к':'k',
+'л':'l',
+'м':'m',
+'н':'n',
+'о':'o',
+'п':'p',
+'р':'r',
+'с':'s',
+'т':'t',
+'у':'u',
+'ф':'f',
+'х':'h',
+'ц':'ts',
+'ч':'ch',
+'ш':'sh',
+'щ':'sch',
+'ъ':'',
+'ы':'i',
+'ь':'',
+'э':'e',
+'ю':'yu',
+'я':'ya',
+' ':' '
+
+};
+
+function transliterate(text){
+
+return text
+.toLowerCase()
+.split('')
+.map(
+char =>
+transliterationMap[char]
+|| char
+)
+.join('');
+
+}
+
+function englishPronunciation(text){
+
+return text
+.toLowerCase()
+.replace(/th/g,'d')
+.replace(/w/g,'v');
+
+}
+function showHome(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'block';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'none';
+
+document.getElementById(
+'quizPage'
+).style.display =
+'none';
+
+document.getElementById(
+'flashcardPage'
+).style.display =
+'none';
+
+}
+
+function showFavoritesPage(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'none';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'block';
+
+document.getElementById(
+'quizPage'
+).style.display =
+'none';
+
+document.getElementById(
+'flashcardPage'
+).style.display =
+'none';
+
+showFavorites();
+
+}
+
+function showQuizPage(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'none';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'none';
+
+document.getElementById(
+'quizPage'
+).style.display =
+'block';
+
+document.getElementById(
+'flashcardPage'
+).style.display =
+'none';
+
+}
+
+function showFlashcardPage(){
+
+document.getElementById(
+'homePage'
+).style.display =
+'none';
+
+document.getElementById(
+'favoritesPage'
+).style.display =
+'none';
+
+document.getElementById(
+'quizPage'
+).style.display =
+'none';
+
+document.getElementById(
+'flashcardPage'
+).style.display =
+'block';
+
+loadFlashcards();
+
+}
+
+async function translateText(){
+
+const input =
+document.getElementById(
+'inputText'
+)
+.value
+.trim();
+
+if(!input){
+
+alert(
+'Metin gir'
+);
+
+return;
+
+}
+
+const mode =
+document.getElementById(
+'languageMode'
+).value;
+
+document.getElementById(
+'loading'
+).innerText =
+'Çevriliyor...';
+
+try{
+
+const parts =
+mode.split('-');
+
+const source =
+parts[0];
+
+const target =
+parts[1];
+
+const response =
+await fetch(
+
+'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
+
+source +
+
+'&tl=' +
+
+target +
+
+'&dt=t&q=' +
+
+encodeURIComponent(
+input
+)
+
+);
+
+const data =
+await response.json();
+
+const translated =
+data[0]
+.map(
+item => item[0]
+)
+.join('');
+
+document.getElementById(
+'resultMain'
+).innerText =
+translated;
+
+if(
+target === 'ru'
+){
+
+currentRussian =
+translated;
+
+document.getElementById(
+'resultPronunciation'
+).innerText =
+
+transliterate(
+translated
+);
+
+}
+else if(
+target === 'en'
+){
+
+currentEnglish =
+translated;
+
+document.getElementById(
+'resultPronunciation'
+).innerText =
+
+englishPronunciation(
+translated
+);
+
+}
+else{
+
+document.getElementById(
+'resultPronunciation'
+).innerText =
+'-';
+
+}
+
+}
+catch(error){
+
+console.log(
+error
+);
+
+alert(
+'Çeviri hatası'
+);
+
+}
+
+document.getElementById(
+'loading'
+).innerText =
+'';
+
+}
+
+function speakResult(){
+
+const text =
+document.getElementById(
+'resultMain'
+).innerText;
+
+if(
+!text
+||
+text === '-'
+){
+
+return;
+
+}
+
+const mode =
+document.getElementById(
+'languageMode'
+).value;
+
+const target =
+mode.split('-')[1];
+
+const utterance =
+new SpeechSynthesisUtterance(
+text
+);
+
+if(
+target === 'ru'
+){
+
+utterance.lang =
+'ru-RU';
+
+}
+else if(
+target === 'en'
+){
+
+utterance.lang =
+'en-US';
+
+}
+else{
+
+utterance.lang =
+'tr-TR';
+
+}
+
+speechSynthesis.speak(
+utterance
+);
+
+}
+
+function saveFavorite(){
+
+const input =
+document.getElementById(
+'inputText'
+)
+.value
+.trim();
+
+const translated =
+document.getElementById(
+'resultMain'
+).innerText;
+
+if(
+translated === '-'
+){
+
+alert(
+'Önce çeviri yap'
+);
+
+return;
+
+}
+
+const favorites =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+favorites.push({
+
+turkish:
+input,
+
+russian:
+currentRussian,
+
+russianLatin:
+transliterate(
+currentRussian
+),
+
+english:
+currentEnglish,
+
+englishLatin:
+englishPronunciation(
+currentEnglish
+),
+
+isDefault:
+false
+
+});
+
+localStorage.setItem(
+
+'favorites',
+
+JSON.stringify(
+favorites
+)
+
+);
+
+alert(
+'Favorilere kaydedildi'
+);
+
+}
+async function loadDefaultFavorites(){
+
+try{
+
+const response =
+await fetch(
+'Kelime.json'
+);
+
+const words =
+await response.json();
+
+const saved =
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+const hasDefault =
+saved.some(
+item =>
+item.isDefault
+);
+
+if(
+!hasDefault
+){
+
+const defaultWords =
+words.map(
+word => ({
+
+...word,
+
+isDefault:
+true
+
+})
+);
+
+const merged =
+
+[
+...defaultWords,
+...saved
+];
+
+localStorage.setItem(
+
+'favorites',
+
+JSON.stringify(
+merged
+)
+
+);
+
+}
+
+}
+catch(error){
+
+console.log(
+error
+);
+
+}
+
+}
+
+function showFavorites(){
+
+const search =
+
+document
+.getElementById(
+'searchFavorite'
+)
+.value
+.toLowerCase();
+
+const favorites =
+
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+const filtered =
+
+favorites.filter(
+item =>
+
+(item.turkish || '')
+.toLowerCase()
+.includes(search)
+
+||
+
+(item.russian || '')
+.toLowerCase()
+.includes(search)
+
+||
+
+(item.english || '')
+.toLowerCase()
+.includes(search)
+
+);
+
+let html = '';
+
+filtered.forEach(
+
+(item,index)=>{
+
+html +=
+
+`
+
+<div class="favorite-item">
+
+<b>
+🇹🇷
+${item.turkish}
+</b>
+
+<br><br>
+
+🇷🇺
+${item.russian || '-'}
+<br>
+
+🔤
+${item.russianLatin || '-'}
+
+<br><br>
+
+🇺🇸
+${item.english || '-'}
+<br>
+
+🔤
+${item.englishLatin || '-'}
+
+<br><br>
+
+${
+item.isDefault
+
+?
+
+''
+
+:
+
+`<button
+onclick="deleteFavorite(${index})">
+
+🗑 Sil
+
+</button>`
+
+}
+
+</div>
+
+`;
+
+}
+
+);
+
+document.getElementById(
+'favoritesList'
+).innerHTML =
+
+html ||
+
+'Kelime bulunamadı';
+
+}
+
+function deleteFavorite(index){
+
+const favorites =
+
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+if(
+favorites[index]
+&&
+favorites[index].isDefault
+){
+
+return;
+
+}
+
+favorites.splice(
+index,
+1
+);
+
+localStorage.setItem(
+
+'favorites',
+
+JSON.stringify(
+favorites
+)
+
+);
+
+showFavorites();
+
+}
+
+function loadFlashcards(){
+
+flashcards =
+
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+if(
+flashcards.length === 0
+){
+
+document.getElementById(
+'flashcard'
+).innerHTML =
+
+'Kelime bulunamadı';
+
+return;
+
+}
+
+currentCardIndex =
+
+Math.floor(
+Math.random()
+*
+flashcards.length
+);
+
+cardFlipped = false;
+
+renderCard();
+
+}
+
+function renderCard(){
+
+const card =
+
+flashcards[
+currentCardIndex
+];
+
+if(
+!card
+)return;
+
+document.getElementById(
+'cardCounter'
+).innerText =
+
+(currentCardIndex+1)
+
++
+
+' / '
+
++
+
+flashcards.length;
+
+if(
+!cardFlipped
+){
+
+document.getElementById(
+'flashcard'
+).innerHTML =
+
+`
+
+<div>
+
+🇹🇷
+
+<br><br>
+
+${card.turkish}
+
+</div>
+
+`;
+
+}
+else{
+
+document.getElementById(
+'flashcard'
+).innerHTML =
+
+`
+
+<div>
+
+🇷🇺
+${card.russian}
+
+<br><br>
+
+🔤
+${card.russianLatin}
+
+<br><br>
+
+🇺🇸
+${card.english}
+
+<br><br>
+
+🔤
+${card.englishLatin}
+
+</div>
+
+`;
+
+}
+
+}
+
+function flipCard(){
+
+cardFlipped =
+!cardFlipped;
+
+renderCard();
+
+}
+
+function nextCard(){
+
+if(
+flashcards.length===0
+)return;
+
+currentCardIndex++;
+
+if(
+currentCardIndex
+>=
+flashcards.length
+){
+
+currentCardIndex = 0;
+
+}
+
+cardFlipped = false;
+
+renderCard();
+
+}
+
+function previousCard(){
+
+if(
+flashcards.length===0
+)return;
+
+currentCardIndex--;
+
+if(
+currentCardIndex < 0
+){
+
+currentCardIndex =
+flashcards.length - 1;
+
+}
+
+cardFlipped = false;
+
+renderCard();
+
+}
+
+function randomCard(){
+
+if(
+flashcards.length===0
+)return;
+
+currentCardIndex =
+
+Math.floor(
+
+Math.random()
+*
+flashcards.length
+
+);
+
+cardFlipped = false;
+
+renderCard();
+
+}
+function speakCard(){
+
+if(
+flashcards.length === 0
+)return;
+
+const card =
+flashcards[
+currentCardIndex
+];
+
+const utterance =
+new SpeechSynthesisUtterance(
+card.russian
+);
+
+utterance.lang =
+'ru-RU';
+
+speechSynthesis.speak(
+utterance
+);
+
+}
+function startQuiz(){
+
+const favorites =
+
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+if(
+favorites.length < 4
+){
+
+alert(
+'Quiz için yeterli kelime yok'
+);
+
+return;
+
+}
+
+quizQuestions = [];
+
+const shuffled =
+
+[...favorites]
+
+.sort(
+()=>Math.random()-0.5
+);
+
+quizQuestions =
+
+shuffled.slice(
+0,
+Math.min(
+10,
+shuffled.length
+)
+);
+
+currentQuestion = 0;
+
+correctAnswers = 0;
+
+document.getElementById(
+'quizResult'
+).style.display =
+'none';
+
+document.getElementById(
+'startQuizButton'
+).style.display =
+'none';
+
+document.getElementById(
+'quizArea'
+).style.display =
+'block';
+
+showQuestion();
+
+}
+
+function showQuestion(){
+
+if(
+currentQuestion
+>=
+quizQuestions.length
+){
+
+finishQuiz();
+
+return;
+
+}
+
+const question =
+
+quizQuestions[
+currentQuestion
+];
+
+document.getElementById(
+'questionCounter'
+).innerText =
+
+'Soru '
+
++
+
+(currentQuestion+1)
+
++
+
+' / '
+
++
+
+quizQuestions.length;
+
+document.getElementById(
+'questionText'
+).innerHTML =
+
+`
+
+🇹🇷
+
+${question.turkish}
+
+`;
+
+const favorites =
+
+JSON.parse(
+localStorage.getItem(
+'favorites'
+)
+||
+'[]'
+);
+
+let options =
+
+[
+question.russian
+];
+
+while(
+options.length < 4
+){
+
+const randomWord =
+
+favorites[
+Math.floor(
+Math.random()
+*
+favorites.length
+)
+];
+
+if(
+randomWord.russian
+&&
+!options.includes(
+randomWord.russian
+)
+){
+
+options.push(
+randomWord.russian
+);
+
+}
+
+}
+
+options =
+
+options.sort(
+()=>Math.random()-0.5
+);
+
+currentCorrectAnswer =
+
+options.indexOf(
+question.russian
+);
+
+document.getElementById(
+'option0'
+).innerText =
+
+'A) '
+
++
+
+options[0]
+
++
+
+' ('
+
++
+
+transliterate(
+options[0]
+)
+
++
+
+')';
+
+document.getElementById(
+'option1'
+).innerText =
+
+'B) '
+
++
+
+options[1]
+
++
+
+' ('
+
++
+
+transliterate(
+options[1]
+)
+
++
+
+')';
+
+document.getElementById(
+'option2'
+).innerText =
+
+'C) '
+
++
+
+options[2]
+
++
+
+' ('
+
++
+
+transliterate(
+options[2]
+)
+
++
+
+')';
+
+document.getElementById(
+'option3'
+).innerText =
+
+'D) '
+
++
+
+options[3]
+
++
+
+' ('
+
++
+
+transliterate(
+options[3]
+)
+
++
+
+')';
+
+}
+
+function answerQuiz(selectedIndex){
+
+const buttons = [
+
+document.getElementById(
+'option0'
+),
+
+document.getElementById(
+'option1'
+),
+
+document.getElementById(
+'option2'
+),
+
+document.getElementById(
+'option3'
+)
+
+];
+
+buttons.forEach(btn=>{
+
+btn.disabled = true;
+
+btn.style.background = '';
+
+});
+
+if(
+selectedIndex
+===
+currentCorrectAnswer
+){
+
+correctAnswers++;
+
+buttons[
+selectedIndex
+]
+.style.background =
+
+'#16a34a';
+
+}
+else{
+
+buttons[
+selectedIndex
+]
+.style.background =
+
+'#dc2626';
+
+buttons[
+currentCorrectAnswer
+]
+.style.background =
+
+'#16a34a';
+
+}
+
+setTimeout(()=>{
+
+buttons.forEach(btn=>{
+
+btn.disabled = false;
+
+btn.style.background = '';
+
+});
+
+currentQuestion++;
+
+showQuestion();
+
+},1000);
+
+}
+
+function finishQuiz(){
+
+document.getElementById(
+'quizArea'
+).style.display =
+'none';
+
+document.getElementById(
+'quizResult'
+).style.display =
+'block';
+
+document.getElementById(
+'startQuizButton'
+).style.display =
+'block';
+
+const total =
+
+quizQuestions.length;
+
+const percent =
+
+Math.round(
+
+(correctAnswers
+/
+total)
+
+*100
+
+);
+
+document.getElementById(
+'quizResult'
+).innerHTML =
+
+`
+
+🏆 Quiz Bitti
+
+<br><br>
+
+✅ Doğru:
+${correctAnswers}
+
+<br><br>
+
+❌ Yanlış:
+${total-correctAnswers}
+
+<br><br>
+
+📊 Başarı:
+%${percent}
+
+`;
+
+}
+loadDefaultFavorites();
+
+showHome();
+
+</script>
+
+<script>
+
+if(
+'serviceWorker'
+in navigator
+){
+
+window.addEventListener(
+
+'load',
+
+()=>{
+
+navigator
+.serviceWorker
+.register(
+'/sw.js'
+)
+.then(()=>{
+
+console.log(
+'SW hazır'
+);
+
+})
+.catch(error=>{
+
+console.log(
+error
+);
+
+});
+
+}
+
+);
+
+}
+
+</script>
+
+</div>
+
+</body>
+
+</html>
