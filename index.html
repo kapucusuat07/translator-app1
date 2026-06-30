@@ -744,13 +744,8 @@ document.getElementById(
 .trim();
 
 if(!input){
-
-alert(
-'Metin gir'
-);
-
+alert('Metin gir');
 return;
-
 }
 
 const mode =
@@ -776,21 +771,12 @@ parts[1];
 
 const response =
 await fetch(
-
 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
-
 source +
-
 '&tl=' +
-
 target +
-
 '&dt=t&q=' +
-
-encodeURIComponent(
-input
-)
-
+encodeURIComponent(input)
 );
 
 const data =
@@ -798,9 +784,7 @@ await response.json();
 
 const translated =
 data[0]
-.map(
-item => item[0]
-)
+.map(item => item[0])
 .join('');
 
 document.getElementById(
@@ -808,36 +792,63 @@ document.getElementById(
 ).innerText =
 translated;
 
-if(
-target === 'ru'
-){
+// Her çeviride sıfırla
+currentRussian = '';
+currentEnglish = '';
 
-currentRussian =
-translated;
+if(source === 'tr'){
+
+if(target === 'ru'){
+
+currentRussian = translated;
 
 document.getElementById(
 'resultPronunciation'
 ).innerText =
+transliterate(translated);
 
-transliterate(
-translated
+// İngilizceyi de al
+const enResponse =
+await fetch(
+'https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=en&dt=t&q=' +
+encodeURIComponent(input)
 );
 
-}
-else if(
-target === 'en'
-){
+const enData =
+await enResponse.json();
 
 currentEnglish =
-translated;
+enData[0]
+.map(item => item[0])
+.join('');
+
+}
+
+else if(target === 'en'){
+
+currentEnglish = translated;
 
 document.getElementById(
 'resultPronunciation'
 ).innerText =
+englishPronunciation(translated);
 
-englishPronunciation(
-translated
+// Rusçayı da al
+const ruResponse =
+await fetch(
+'https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=ru&dt=t&q=' +
+encodeURIComponent(input)
 );
+
+const ruData =
+await ruResponse.json();
+
+currentRussian =
+ruData[0]
+.map(item => item[0])
+.join('');
+
+}
 
 }
 else{
@@ -852,13 +863,9 @@ document.getElementById(
 }
 catch(error){
 
-console.log(
-error
-);
+console.log(error);
 
-alert(
-'Çeviri hatası'
-);
+alert('Çeviri hatası');
 
 }
 
